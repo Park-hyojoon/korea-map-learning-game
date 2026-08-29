@@ -385,6 +385,16 @@
       cursor: zoom-in;
     }
 
+    .map-viewport.space-pan-ready {
+      cursor: grab !important;
+      user-select: none;
+    }
+
+    .map-viewport.is-panning {
+      cursor: grabbing !important;
+      user-select: none;
+    }
+
     .map-stage {
       --zoom: 1;
       position: relative;
@@ -582,7 +592,7 @@
           <span>정답 +1점</span>
         </div>
         <div class="zoom-toolbar" aria-label="지도 확대 및 축소">
-          <span class="wheel-tip"><span class="wheel-icon" aria-hidden="true">🖱️</span>마우스 휠로 확대·축소 <span class="zoom-level" id="zoomLevel" aria-live="polite">100%</span></span>
+          <span class="wheel-tip"><span class="wheel-icon" aria-hidden="true">🖱️</span>휠 확대·축소 · Space+드래그 이동 <span class="zoom-level" id="zoomLevel" aria-live="polite">100%</span></span>
           <button class="fit-button" id="zoomResetButton" type="button" aria-label="지도를 100퍼센트 전체 화면으로 되돌리기"><span class="fit-symbol" aria-hidden="true">⊞</span> 전체 지도</button>
         </div>
         <div class="map-viewport" id="mapViewport">
@@ -705,6 +715,14 @@
     let bestStreak = 0;
     let answered = false;
     let mapZoom = 1;
+    let spacePressed = false;
+    let isPanning = false;
+    let panPointerId = null;
+    let panStartX = 0;
+    let panStartY = 0;
+    let panStartScrollLeft = 0;
+    let panStartScrollTop = 0;
+    let panMoved = false;
 
     const MIN_ZOOM = 1;
     const MAX_ZOOM = 2.5;
@@ -763,6 +781,8 @@
       elements.mapStage.style.setProperty("--zoom", mapZoom);
       elements.zoomLevel.textContent = `${Math.round(mapZoom * 100)}%`;
       viewport.style.cursor = mapZoom >= MAX_ZOOM ? "zoom-out" : "zoom-in";
+      viewport.classList.toggle("space-pan-ready", spacePressed && mapZoom > MIN_ZOOM);
+      if (mapZoom <= MIN_ZOOM && isPanning) finishMapPan();
 
       requestAnimationFrame(() => {
         if (resetPosition || mapZoom === MIN_ZOOM) {
@@ -787,6 +807,63 @@
         x: event.clientX - bounds.left,
         y: event.clientY - bounds.top
       });
+    }
+
+    function handleSpaceDown(event) {
+      const isTyping = event.target instanceof HTMLElement && event.target.matches("input, textarea, select, [contenteditable='true']");
+      if (event.code !== "Space" || isTyping || mapZoom <= MIN_ZOOM) return;
+      event.preventDefault();
+      spacePressed = true;
+      elements.mapViewport.classList.add("space-pan-ready");
+    }
+
+    function finishMapPan() {
+      if (!isPanning) return;
+      isPanning = false;
+      elements.mapViewport.classList.remove("is-panning");
+      if (panPointerId !== null && elements.mapViewport.hasPointerCapture(panPointerId)) {
+        elements.mapViewport.releasePointerCapture(panPointerId);
+      }
+      panPointerId = null;
+      window.setTimeout(() => { panMoved = false; }, 0);
+    }
+
+    function handleSpaceUp(event) {
+      if (event.code !== "Space") return;
+      if (spacePressed) event.preventDefault();
+      spacePressed = false;
+      elements.mapViewport.classList.remove("space-pan-ready");
+      finishMapPan();
+    }
+
+    function startMapPan(event) {
+      if (!spacePressed || mapZoom <= MIN_ZOOM || event.button !== 0) return;
+      event.preventDefault();
+      isPanning = true;
+      panMoved = false;
+      panPointerId = event.pointerId;
+      panStartX = event.clientX;
+      panStartY = event.clientY;
+      panStartScrollLeft = elements.mapViewport.scrollLeft;
+      panStartScrollTop = elements.mapViewport.scrollTop;
+      elements.mapViewport.classList.add("is-panning");
+      elements.mapViewport.setPointerCapture(event.pointerId);
+    }
+
+    function moveMapPan(event) {
+      if (!isPanning || event.pointerId !== panPointerId) return;
+      const movedX = event.clientX - panStartX;
+      const movedY = event.clientY - panStartY;
+      if (Math.abs(movedX) > 3 || Math.abs(movedY) > 3) panMoved = true;
+      elements.mapViewport.scrollLeft = panStartScrollLeft - movedX;
+      elements.mapViewport.scrollTop = panStartScrollTop - movedY;
+    }
+
+    function preventClickAfterPan(event) {
+      if (!panMoved) return;
+      event.preventDefault();
+      event.stopPropagation();
+      panMoved = false;
     }
 
     function resetPoints() {
@@ -909,6 +986,19 @@
     elements.restartButton.addEventListener("click", startGame);
     elements.zoomResetButton.addEventListener("click", () => setMapZoom(MIN_ZOOM, true));
     elements.mapViewport.addEventListener("wheel", handleMapWheel, { passive: false });
+    document.addEventListener("keydown", handleSpaceDown);
+    document.addEventListener("keyup", handleSpaceUp);
+    window.addEventListener("blur", () => {
+      spacePressed = false;
+      elements.mapViewport.classList.remove("space-pan-ready");
+      finishMapPan();
+    });
+    elements.mapViewport.addEventListener("pointerdown", startMapPan);
+    elements.mapViewport.addEventListener("pointermove", moveMapPan);
+    elements.mapViewport.addEventListener("pointerup", finishMapPan);
+    elements.mapViewport.addEventListener("pointercancel", finishMapPan);
+    elements.mapViewport.addEventListener("lostpointercapture", finishMapPan);
+    elements.mapViewport.addEventListener("click", preventClickAfterPan, true);
     elements.mapImage.addEventListener("error", () => {
       elements.feedback.className = "feedback wrong";
       elements.feedback.textContent = "지도 이미지를 찾을 수 없습니다. HTML과 지도 JPG를 같은 폴더에 두어 주세요.";
