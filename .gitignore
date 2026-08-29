@@ -1,0 +1,9 @@
+# 학습 문제 원본표와 로컬 백업은 공개 시연 저장소에서 제외합니다.
+KakaoTalk_20260829_172706236_01.jpg
+KakaoTalk_20260829_172706236_02.jpg
+index.before-zoom.html
+index.backup-*.html
+
+# 운영체제 임시 파일
+Thumbs.db
+.DS_Store
