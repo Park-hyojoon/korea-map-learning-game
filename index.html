@@ -399,6 +399,35 @@
       text-align: center;
     }
 
+    .zoom-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 휠이 없는 모바일에서도 확대·축소할 수 있는 단계 버튼입니다. */
+    .zoom-step {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #dbe3e9;
+      border-radius: 14px;
+      background: #fff;
+      color: #55616e;
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1;
+      box-shadow: 0 3px 0 #dbe3e9;
+      touch-action: manipulation;
+    }
+
+    .zoom-step:hover:not(:disabled) { transform: translateY(-2px); }
+    .zoom-step:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #dbe3e9; }
+    .zoom-step:focus-visible { outline: 4px solid rgba(47, 169, 223, .24); outline-offset: 2px; }
+    .zoom-step:disabled { opacity: .4; cursor: default; }
+
     .map-viewport {
       width: min(100%, 650px);
       max-height: 74vh;
@@ -412,6 +441,11 @@
       overscroll-behavior: contain;
       touch-action: pan-x pan-y;
       cursor: zoom-in;
+    }
+
+    /* 두 손가락 확대 중에는 브라우저 기본 스크롤을 막아야 지도가 흔들리지 않습니다. */
+    .map-viewport.is-pinching {
+      touch-action: none;
     }
 
     .map-viewport.space-pan-ready {
@@ -643,8 +677,13 @@
           <span>정답 +1점</span>
         </div>
         <div class="zoom-toolbar" aria-label="지도 확대 및 축소">
-          <span class="wheel-tip"><span class="wheel-icon" aria-hidden="true">🖱️</span>휠 확대·축소 · Space+드래그 이동 <span class="zoom-level" id="zoomLevel" aria-live="polite">100%</span></span>
-          <button class="fit-button" id="zoomResetButton" type="button" aria-label="지도를 100퍼센트 전체 화면으로 되돌리기"><span class="fit-symbol" aria-hidden="true">⊞</span> 전체 지도</button>
+          <span class="wheel-tip"><span class="wheel-icon" aria-hidden="true">🖱️</span><span class="wheel-text">휠·손가락 확대·축소 · 드래그 이동</span></span>
+          <div class="zoom-controls">
+            <button class="zoom-step" id="zoomOutButton" type="button" aria-label="지도 축소">−</button>
+            <span class="zoom-level" id="zoomLevel" aria-live="polite">100%</span>
+            <button class="zoom-step" id="zoomInButton" type="button" aria-label="지도 확대">+</button>
+            <button class="fit-button" id="zoomResetButton" type="button" aria-label="지도를 100퍼센트 전체 화면으로 되돌리기"><span class="fit-symbol" aria-hidden="true">⊞</span> 전체 지도</button>
+          </div>
         </div>
         <div class="map-viewport" id="mapViewport">
           <div class="map-stage" id="mapStage">
@@ -681,8 +720,8 @@
         tabShadow: "#e8b77d",
         coverColor: "#f7be94",
         // 원본 지도에서 강원도(주황 권역)를 감싸는 다각형입니다.
-        // 다른 권역을 추가할 때도 같은 방식의 polygon 좌표를 넣으면 됩니다.
-        mapClip: "polygon(32% 7%, 42% 5%, 54% 5%, 60% 0%, 66% 1%, 70% 7%, 72% 16%, 76% 22%, 83% 29%, 83% 32%, 72% 32%, 65% 30%, 58% 29%, 53% 30%, 48% 29%, 43% 30%, 40% 28%, 42% 24%, 41% 20%, 39% 17%, 36% 13%, 32% 10%)",
+        // 원본 이미지의 권역 색을 검출해 뽑았습니다. 방법은 HANDOFF.md에 적어 두었습니다.
+        mapClip: "polygon(34.7% 5.9%, 39.3% 8.4%, 46.1% 15.1%, 44.4% 18.7%, 49.1% 21.7%, 50.1% 24.7%, 48.6% 29.8%, 57.9% 28.5%, 66.3% 30.7%, 69.6% 32.7%, 81.8% 31.5%, 83.3% 32.0%, 84.3% 31.4%, 84.0% 28.0%, 73.5% 16.3%, 67.3% 4.5%, 64.2% 1.5%, 60.2% 1.1%, 50.7% 5.9%, 47.0% 6.3%, 39.5% 5.0%)",
         mapFocus: { x: .61, y: .22, zoom: 2.15 },
         cities: [
           {
@@ -756,8 +795,8 @@
         coverColor: "#a9def0",
         // 경상북도 본토와 울릉도를 각각 원색으로 보여 줍니다.
         mapClips: [
-          "polygon(53.5% 42%, 54% 41%, 55.5% 41%, 57% 39.5%, 59% 38.5%, 60.5% 37.5%, 62% 36%, 64% 35.5%, 65.5% 34%, 66.5% 33.5%, 68.5% 33%, 70% 33.2%, 72% 33.5%, 74% 33.2%, 76% 32.8%, 78% 32.5%, 80% 32%, 82% 32.2%, 84% 35%, 84% 42%, 85% 49%, 86% 55%, 84% 59%, 79% 60%, 75% 57%, 70% 59%, 65% 58%, 61% 60%, 56% 59%, 55% 56%, 54% 52%, 53.5% 48%, 54% 44%)",
-          "circle(3.5% at 88% 33%)"
+          "polygon(83.4% 32.6%, 79.7% 33.2%, 72.5% 32.6%, 69.9% 33.1%, 66.0% 34.9%, 61.7% 38.3%, 56.2% 39.1%, 51.3% 41.1%, 51.1% 45.7%, 54.0% 47.6%, 54.3% 49.2%, 53.4% 51.2%, 50.3% 52.4%, 51.1% 55.1%, 53.9% 55.7%, 56.4% 57.3%, 55.9% 59.9%, 58.1% 58.6%, 60.3% 60.5%, 64.8% 60.0%, 68.1% 61.8%, 69.5% 60.4%, 71.6% 61.2%, 72.8% 60.7%, 73.9% 62.3%, 75.3% 62.7%, 75.7% 61.0%, 78.5% 59.1%, 80.8% 60.3%, 83.8% 59.8%, 85.2% 60.4%, 88.3% 53.8%, 87.5% 52.4%, 85.0% 51.1%, 84.5% 49.2%, 86.5% 40.0%, 85.2% 34.9%)",
+          "polygon(90.2% 30.8%, 89.5% 30.9%, 88.6% 31.5%, 88.3% 31.9%, 88.1% 32.3%, 88.1% 33.0%, 88.3% 33.4%, 88.3% 34.2%, 88.6% 35.1%, 89.1% 35.6%, 90.0% 36.0%, 91.3% 36.0%, 92.6% 35.6%, 93.5% 34.9%, 94.0% 34.0%, 94.1% 33.1%, 93.8% 32.1%, 92.9% 31.3%, 91.7% 30.8%)"
         ],
         mapFocus: { x: .69, y: .45, zoom: 1.85 },
         cities: [
@@ -839,7 +878,7 @@
         tabShadow: "#c5ccd2",
         coverColor: "#c8c9ca",
         // 자료의 회색 권역인 전라남도와 광주를 함께 보여 줍니다.
-        mapClip: "polygon(1% 72%, 4% 69%, 9% 67%, 14% 65.5%, 19% 64.5%, 24% 65%, 29% 66%, 34% 67%, 38% 68.5%, 42% 69.5%, 45% 71%, 47% 74%, 46% 78%, 44% 81%, 39% 83%, 32% 84%, 25% 86%, 17% 87%, 10% 86%, 4% 83%, 1% 79%)",
+        mapClip: "polygon(46.3% 65.3%, 42.3% 66.4%, 39.9% 65.0%, 26.5% 63.0%, 23.5% 64.8%, 19.3% 63.7%, 14.7% 64.5%, 10.5% 68.0%, 7.2% 69.3%, 5.2% 73.0%, 2.4% 74.9%, 4.9% 80.5%, 3.7% 85.9%, 8.7% 88.6%, 24.9% 89.7%, 27.6% 88.7%, 28.6% 85.6%, 46.7% 82.6%, 47.3% 78.6%, 49.4% 78.0%, 47.5% 75.0%, 49.6% 73.5%, 47.3% 73.0%, 47.1% 71.4%, 49.7% 70.2%, 47.1% 69.3%, 45.5% 66.9%)",
         mapFocus: { x: .26, y: .74, zoom: 2.0 },
         cities: [
           {
@@ -920,7 +959,7 @@
         tabShadow: "#e9adc7",
         coverColor: "#efbad3",
         // 자료의 분홍색 권역인 경상남도와 울산·부산을 함께 보여 줍니다.
-        mapClip: "polygon(44% 62%, 47% 60.5%, 51% 59.5%, 55% 60.8%, 60% 61.2%, 65% 60.8%, 69% 61.2%, 74% 60.7%, 79% 61.2%, 83% 62%, 86% 63.5%, 86% 67%, 84% 70%, 80% 72%, 76% 72%, 73% 75%, 71% 79%, 67% 81%, 62% 81%, 57% 80%, 53% 78%, 50% 76%, 47% 73%, 45% 69%, 45% 64%)",
+        mapClip: "polygon(43.3% 65.9%, 47.7% 71.8%, 47.3% 76.1%, 48.4% 78.3%, 55.9% 79.3%, 61.1% 78.2%, 63.1% 79.3%, 64.8% 79.4%, 68.1% 78.5%, 70.8% 76.3%, 71.6% 74.5%, 76.8% 72.3%, 79.2% 70.2%, 80.0% 68.3%, 85.0% 64.6%, 85.0% 60.8%, 79.4% 59.7%, 72.0% 61.2%, 63.8% 60.5%, 61.0% 61.0%, 56.9% 59.1%, 54.2% 56.8%, 51.8% 56.8%, 50.1% 56.0%, 45.6% 58.4%, 45.3% 64.9%)",
         mapFocus: { x: .66, y: .70, zoom: 2.0 },
         cities: [
           {
@@ -988,6 +1027,63 @@
             cover: { width: 5.4, aspect: 1.2, offsetX: 0, offsetY: 0, rotate: -4 }
           }
         ]
+      },
+      gyeonggi: {
+        name: "경기·서울",
+        emoji: "🟥",
+        color: "red",
+        pointColorName: "빨간색",
+        pointColor: "#ef4b4b",
+        darkColor: "#a02323",
+        pointShadow: "#8a1f1f",
+        softColor: "#fff0ee",
+        tabShadow: "#eeb0aa",
+        coverColor: "#f2aca4",
+        // 자료의 빨간색 권역인 경기도와 서울을 함께 보여 줍니다.
+        mapClip: "polygon(31.7% 6.2%, 25.6% 8.9%, 24.6% 13.1%, 23.1% 14.8%, 15.4% 14.6%, 13.1% 15.1%, 11.3% 16.4%, 11.0% 18.6%, 12.4% 20.9%, 18.3% 24.9%, 17.8% 27.5%, 18.3% 28.5%, 21.8% 29.9%, 24.3% 32.4%, 28.9% 34.1%, 34.7% 33.6%, 37.7% 34.4%, 39.9% 32.4%, 46.9% 29.7%, 47.4% 28.0%, 46.1% 25.9%, 47.9% 23.9%, 46.6% 22.8%, 47.1% 21.1%, 46.6% 20.7%, 44.9% 21.7%, 43.9% 21.6%, 43.5% 19.9%, 42.0% 19.2%, 41.2% 13.6%, 36.0% 10.2%, 35.7% 8.8%, 33.7% 7.8%, 34.0% 6.4%)",
+        mapFocus: { x: .29, y: .20, zoom: 2.1 },
+        cities: [
+          {
+            city: "고양",
+            initials: "ㄱㅇ",
+            clues: ["경기도, 서울의 위성도시(주거기능)", "1기 일산 신도시", "특례시", "KINTEX(국내최대종합전시장)", "MBC방송국", "북한산성", "행주산성", "일산호수공원"],
+            x: 27.9,
+            y: 19.8,
+            cover: { width: 3.8, aspect: 1.2, offsetX: 0, offsetY: 0, rotate: 0 }
+          },
+          {
+            city: "의정부",
+            initials: "ㅇㅈㅂ",
+            clues: ["경기도", "경기도청 북부청사", "군사기능", "군대", "부대찌개", "초계탕"],
+            x: 33.8,
+            y: 18.7,
+            cover: { width: 5.0, aspect: 1.4, offsetX: 0, offsetY: 0, rotate: 0 }
+          },
+          {
+            city: "서울",
+            initials: "ㅅㅇ",
+            clues: ["특별시", "수도", "한양", "숭례문", "경복궁", "청와대", "인사동", "광화문", "남산타워", "세계문화유산(종묘, 창덕궁)"],
+            x: 31.1,
+            y: 22.2,
+            cover: { width: 3.8, aspect: 1.2, offsetX: 0, offsetY: 0, rotate: 0 }
+          },
+          {
+            city: "수원",
+            initials: "ㅅㅇ",
+            clues: ["경기도청 소재지", "경기도 인구 1위", "특례시", "세계문화유산(화성-팔달문)", "정조", "정약용의 거중기", "왕갈비", "삼성전자 본사"],
+            x: 31.6,
+            y: 27.7,
+            cover: { width: 4.4, aspect: 1.15, offsetX: 0, offsetY: 0, rotate: 0 }
+          },
+          {
+            city: "용인",
+            initials: "ㅇㅇ",
+            clues: ["경기도", "서울의 주거기능", "특례시", "에버랜드와 목조 롤러코스터", "삼성전자(반도체)", "광교신도시"],
+            x: 36.8,
+            y: 28.6,
+            cover: { width: 4.6, aspect: 1.3, offsetX: 0, offsetY: 0, rotate: 0 }
+          }
+        ]
       }
     };
 
@@ -1027,6 +1123,8 @@
       mapViewport: document.getElementById("mapViewport"),
       mapStage: document.getElementById("mapStage"),
       zoomResetButton: document.getElementById("zoomResetButton"),
+      zoomInButton: document.getElementById("zoomInButton"),
+      zoomOutButton: document.getElementById("zoomOutButton"),
       zoomLevel: document.getElementById("zoomLevel"),
       resultText: document.getElementById("resultText"),
       resultEmoji: document.getElementById("resultEmoji"),
@@ -1051,9 +1149,14 @@
     let panStartScrollTop = 0;
     let panMoved = false;
 
+    let isPinching = false;
+    let pinchStartDistance = 0;
+    let pinchStartZoom = 1;
+
     const MIN_ZOOM = 1;
     const MAX_ZOOM = 2.5;
     const WHEEL_ZOOM_STEP = .15;
+    const BUTTON_ZOOM_STEP = .25;
 
     function shuffle(items) {
       const copied = [...items];
@@ -1179,6 +1282,8 @@
       elements.mapStage.style.setProperty("--point-shadow-offset", `${pointShadowOffset.toFixed(1)}px`);
       elements.mapStage.style.setProperty("--point-label-gap", `${pointLabelGap.toFixed(1)}px`);
       elements.zoomLevel.textContent = `${Math.round(mapZoom * 100)}%`;
+      elements.zoomInButton.disabled = mapZoom >= MAX_ZOOM;
+      elements.zoomOutButton.disabled = mapZoom <= MIN_ZOOM;
       viewport.style.cursor = mapZoom >= MAX_ZOOM ? "zoom-out" : "zoom-in";
       viewport.classList.toggle("space-pan-ready", spacePressed && mapZoom > MIN_ZOOM);
       if (mapZoom <= MIN_ZOOM && isPanning) finishMapPan();
@@ -1206,6 +1311,55 @@
         x: event.clientX - bounds.left,
         y: event.clientY - bounds.top
       });
+    }
+
+    // 화면 가운데를 기준으로 한 단계씩 확대·축소합니다. 휠이 없는 기기에서 사용합니다.
+    function stepMapZoom(direction) {
+      const nextZoom = Math.round((mapZoom + (direction * BUTTON_ZOOM_STEP)) * 100) / 100;
+      setMapZoom(nextZoom, false, {
+        x: elements.mapViewport.clientWidth / 2,
+        y: elements.mapViewport.clientHeight / 2
+      });
+    }
+
+    function touchDistance(touches) {
+      return Math.hypot(
+        touches[0].clientX - touches[1].clientX,
+        touches[0].clientY - touches[1].clientY
+      );
+    }
+
+    function touchMidpoint(touches) {
+      const bounds = elements.mapViewport.getBoundingClientRect();
+      return {
+        x: ((touches[0].clientX + touches[1].clientX) / 2) - bounds.left,
+        y: ((touches[0].clientY + touches[1].clientY) / 2) - bounds.top
+      };
+    }
+
+    function startPinch(event) {
+      if (event.touches.length !== 2) return;
+      pinchStartDistance = touchDistance(event.touches);
+      if (pinchStartDistance <= 0) return;
+      isPinching = true;
+      pinchStartZoom = mapZoom;
+      elements.mapViewport.classList.add("is-pinching");
+    }
+
+    function movePinch(event) {
+      if (!isPinching || event.touches.length !== 2) return;
+      // 기본 스크롤·페이지 확대를 막고 지도만 확대합니다.
+      event.preventDefault();
+      const distance = touchDistance(event.touches);
+      const nextZoom = Math.round((pinchStartZoom * (distance / pinchStartDistance)) * 100) / 100;
+      setMapZoom(nextZoom, false, touchMidpoint(event.touches));
+    }
+
+    function finishPinch(event) {
+      if (!isPinching || event.touches.length >= 2) return;
+      isPinching = false;
+      pinchStartDistance = 0;
+      elements.mapViewport.classList.remove("is-pinching");
     }
 
     function handleSpaceDown(event) {
@@ -1397,7 +1551,13 @@
     elements.nextButton.addEventListener("click", nextQuestion);
     elements.restartButton.addEventListener("click", startGame);
     elements.zoomResetButton.addEventListener("click", () => setMapZoom(MIN_ZOOM, true));
+    elements.zoomInButton.addEventListener("click", () => stepMapZoom(1));
+    elements.zoomOutButton.addEventListener("click", () => stepMapZoom(-1));
     elements.mapViewport.addEventListener("wheel", handleMapWheel, { passive: false });
+    elements.mapViewport.addEventListener("touchstart", startPinch, { passive: true });
+    elements.mapViewport.addEventListener("touchmove", movePinch, { passive: false });
+    elements.mapViewport.addEventListener("touchend", finishPinch);
+    elements.mapViewport.addEventListener("touchcancel", finishPinch);
     document.addEventListener("keydown", handleSpaceDown);
     document.addEventListener("keyup", handleSpaceUp);
     window.addEventListener("blur", () => {
