@@ -18,6 +18,8 @@
       --red: #ef5b5b;
       --red-soft: #ffe3e3;
       --blue: #2fa9df;
+      --region-color: #ff9418;
+      --region-dark: #bd5100;
       --shadow: 0 8px 0 #e2e6ea, 0 15px 32px rgba(35, 50, 65, 0.08);
     }
 
@@ -75,6 +77,39 @@
       font-size: 18px;
       font-weight: 900;
       box-shadow: 0 5px 0 #efddc7;
+    }
+
+    .region-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: -4px 0 22px;
+    }
+
+    .region-tab {
+      min-height: 48px;
+      padding: 0 18px;
+      border: 2px solid #dfe5ea;
+      border-radius: 16px;
+      background: #fff;
+      color: #687482;
+      cursor: pointer;
+      font-weight: 900;
+      box-shadow: 0 4px 0 #dfe5ea;
+      transition: transform .16s ease, border-color .16s ease, color .16s ease;
+    }
+
+    .region-tab:hover { transform: translateY(-2px); }
+    .region-tab.active {
+      border-color: var(--tab-color);
+      background: var(--tab-soft);
+      color: var(--tab-dark);
+      box-shadow: 0 4px 0 var(--tab-shadow);
+    }
+
+    .region-tab.completed::after {
+      content: " ✓";
+      color: var(--green);
     }
 
     .game-grid {
@@ -297,7 +332,7 @@
       font-weight: 800;
     }
 
-    .map-guide strong { color: var(--orange-dark); }
+    .map-guide strong { color: var(--region-dark); }
 
     .zoom-toolbar {
       display: flex;
@@ -390,6 +425,11 @@
 
     .map-stage {
       --zoom: 1;
+      --point-size: 28px;
+      --point-border: 3px;
+      --point-font-size: 16px;
+      --point-shadow-offset: 2px;
+      --point-label-gap: 5px;
       position: relative;
       width: calc(var(--zoom) * 100%);
       min-width: 100%;
@@ -434,32 +474,32 @@
       aspect-ratio: var(--cover-aspect);
       transform: translate(-50%, -50%) rotate(var(--cover-rotate));
       border-radius: 30%;
-      background: #f7be94;
-      box-shadow: 0 0 4px 3px #f7be94;
+      background: var(--cover-color, #f7be94);
+      box-shadow: 0 0 4px 3px var(--cover-color, #f7be94);
       pointer-events: none;
       z-index: 2;
     }
 
     .city-point {
-      --point-color: var(--orange);
+      --point-color: var(--region-color);
       position: absolute;
       left: calc(var(--x) * 1%);
       top: calc(var(--y) * 1%);
-      width: clamp(40px, 7.2vw, 56px);
+      width: var(--point-size);
       aspect-ratio: 1;
       display: grid;
       place-items: center;
       transform: translate(-50%, -50%);
-      border: 4px solid #fff;
+      border: var(--point-border) solid #fff;
       border-radius: 50%;
       background: var(--point-color);
       color: #fff;
       cursor: pointer;
-      font-size: clamp(18px, 2.7vw, 25px);
+      font-size: var(--point-font-size);
       font-weight: 1000;
       line-height: 1;
-      box-shadow: 0 4px 0 #a9410b, 0 7px 16px rgba(89, 44, 13, .28);
-      transition: transform .16s ease, background .2s ease, box-shadow .2s ease;
+      box-shadow: 0 var(--point-shadow-offset) 0 #a9410b, 0 5px 13px rgba(89, 44, 13, .28);
+      transition: width .16s ease, border-width .16s ease, font-size .16s ease, transform .16s ease, background .2s ease, box-shadow .2s ease;
       z-index: 3;
     }
 
@@ -468,18 +508,18 @@
     .city-point:disabled { cursor: default; opacity: 1; }
     .city-point.correct {
       --point-color: var(--green);
-      box-shadow: 0 4px 0 #126541, 0 0 0 7px rgba(49, 171, 111, .18);
+      box-shadow: 0 var(--point-shadow-offset) 0 #126541, 0 0 0 7px rgba(49, 171, 111, .18);
       z-index: 4;
     }
     .city-point.wrong {
       --point-color: var(--red);
-      box-shadow: 0 4px 0 #8c3434, 0 0 0 7px rgba(196, 77, 77, .14);
+      box-shadow: 0 var(--point-shadow-offset) 0 #8c3434, 0 0 0 7px rgba(196, 77, 77, .14);
     }
 
     .city-name {
       position: absolute;
       left: 50%;
-      top: calc(100% + 8px);
+      top: calc(100% + var(--point-label-gap));
       width: max-content;
       max-width: 92px;
       padding: 5px 8px;
@@ -541,6 +581,8 @@
       .app { width: min(100% - 18px, 1180px); padding-top: 18px; }
       .hero { align-items: flex-start; flex-direction: column; }
       .region-badge { padding: 9px 14px; font-size: 16px; }
+      .region-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+      .region-tab { padding: 0 10px; }
       .question-panel, .map-panel { padding: 15px; border-radius: 20px; }
       .controls { grid-template-columns: 1fr; }
       .map-guide { align-items: flex-start; flex-direction: column; font-size: 14px; }
@@ -558,10 +600,12 @@
     <header class="hero">
       <div>
         <p class="eyebrow">우리나라 도시 찾기 · 1차 연습판</p>
-        <h1>한반도 지형 암기 게임<br>강원도 테스트</h1>
+        <h1>한반도 지형 암기 게임<br><span id="regionTitle">강원도 테스트</span></h1>
       </div>
-      <div class="region-badge" aria-label="현재 권역 강원도">🟧 강원도</div>
+      <div class="region-badge" id="regionBadge" aria-label="현재 권역 강원도">🟧 강원도</div>
     </header>
+
+    <nav class="region-tabs" id="regionTabs" aria-label="학습 권역 선택"></nav>
 
     <section class="game-grid" id="gameScreen" aria-label="강원도 도시 찾기 게임">
       <aside class="panel question-panel">
@@ -584,7 +628,7 @@
           <ul class="clue-list" id="clueList"></ul>
 
           <div class="hint-box" id="hintBox" aria-live="polite" hidden></div>
-        <div class="feedback" id="feedback" aria-live="assertive">주황색 도시 포인트를 하나 눌러 주세요.</div>
+        <div class="feedback" id="feedback" aria-live="assertive" hidden></div>
 
         <div class="controls">
           <button class="action-button hint-button" id="hintButton" type="button">💡 힌트 보기</button>
@@ -594,7 +638,7 @@
 
       <section class="panel map-panel" aria-label="한반도 지도">
         <div class="map-guide">
-          <span><strong>강원도</strong>의 주황색 포인트를 눌러 보세요.</span>
+          <span><strong id="mapRegionName">강원도</strong>의 <span id="pointColorName">주황색</span> 포인트를 눌러 보세요.</span>
           <span>정답 +1점</span>
         </div>
         <div class="zoom-toolbar" aria-label="지도 확대 및 축소">
@@ -614,7 +658,7 @@
     <section class="panel result-card" id="resultScreen" aria-live="polite">
       <div>
         <div class="result-emoji" id="resultEmoji">🎉</div>
-        <h2>강원도 연습 완료!</h2>
+        <h2 id="resultTitle">강원도 연습 완료!</h2>
         <p id="resultText"></p>
         <button class="action-button next-button restart-button" id="restartButton" type="button">다시 도전하기</button>
       </div>
@@ -626,7 +670,14 @@
     const GAME_REGIONS = {
       gangwon: {
         name: "강원도",
+        emoji: "🟧",
         color: "orange",
+        pointColorName: "주황색",
+        pointColor: "#ff9418",
+        darkColor: "#bd5100",
+        softColor: "#fff0da",
+        tabShadow: "#e8b77d",
+        coverColor: "#f7be94",
         // 원본 지도에서 강원도(주황 권역)를 감싸는 다각형입니다.
         // 다른 권역을 추가할 때도 같은 방식의 polygon 좌표를 넣으면 됩니다.
         mapClip: "polygon(32% 7%, 42% 5%, 54% 5%, 60% 0%, 66% 1%, 70% 7%, 72% 16%, 76% 22%, 83% 29%, 83% 32%, 72% 32%, 65% 30%, 58% 29%, 53% 30%, 48% 29%, 43% 30%, 40% 28%, 42% 24%, 41% 20%, 39% 17%, 36% 13%, 32% 10%)",
@@ -689,17 +740,114 @@
             cover: { width: 4.8, aspect: 1, offsetX: 1.8, offsetY: -.9, rotate: -12 }
           }
         ]
+      },
+      gyeongbuk: {
+        name: "경상북도",
+        emoji: "🟦",
+        color: "blue",
+        pointColorName: "하늘색",
+        pointColor: "#2fa9df",
+        darkColor: "#147ca9",
+        softColor: "#e3f5ff",
+        tabShadow: "#9bcde3",
+        coverColor: "#a9def0",
+        // 경상북도 본토와 울릉도를 각각 원색으로 보여 줍니다.
+        mapClips: [
+          "polygon(53.5% 42%, 54% 41%, 55.5% 41%, 57% 39.5%, 59% 38.5%, 60.5% 37.5%, 62% 36%, 64% 35.5%, 65.5% 34%, 66.5% 33.5%, 68.5% 33%, 70% 33.2%, 72% 33.5%, 74% 33.2%, 76% 32.8%, 78% 32.5%, 80% 32%, 82% 32.2%, 84% 35%, 84% 42%, 85% 49%, 86% 55%, 84% 59%, 79% 60%, 75% 57%, 70% 59%, 65% 58%, 61% 60%, 56% 59%, 55% 56%, 54% 52%, 53.5% 48%, 54% 44%)",
+          "circle(3.5% at 88% 33%)"
+        ],
+        mapFocus: { x: .69, y: .45, zoom: 1.85 },
+        cities: [
+          {
+            city: "경주",
+            initials: "ㄱㅈ",
+            clues: ["세계문화유산(석굴암, 불국사, 양동마을, 대릉원지구, 월성지구, 황룡사지구)", "황남빵", "첨성대", "서라벌", "대릉원", "천마총", "김유신", "에밀레종", "원자력발전소(양남-월성)"],
+            x: 79.1,
+            y: 56.1,
+            cover: { width: 5.2, aspect: 1.15, offsetX: .3, offsetY: .4, rotate: -4 }
+          },
+          {
+            city: "대구",
+            initials: "ㄷㄱ",
+            clues: ["광역시", "소우지", "극서지(대프리카)", "분지", "섬유공업", "치맥페스티벌", "납작만두", "막창"],
+            x: 65.8,
+            y: 54.7,
+            cover: { width: 5.0, aspect: 1.15, offsetX: .2, offsetY: .4, rotate: -4 }
+          },
+          {
+            city: "안동",
+            initials: "ㅇㄷ",
+            clues: ["경상북도 도청 소재지", "세계문화유산(하회마을)", "하회탈", "탈춤페스티벌", "도산서원", "찜닭", "탈춤", "삼베", "헛제사밥", "슬로시티"],
+            x: 68.7,
+            y: 41.8,
+            cover: { width: 5.0, aspect: 1.35, offsetX: .3, offsetY: .2, rotate: -4 }
+          },
+          {
+            city: "포항",
+            initials: "ㅍㅎ",
+            clues: ["호미곶", "죽도시장", "구룡포와 과메기", "대게", "물회", "제철공업(포스코)", "경북 인구 1위"],
+            x: 79.2,
+            y: 50.1,
+            cover: { width: 5.0, aspect: 1.35, offsetX: .3, offsetY: .2, rotate: -4 }
+          },
+          {
+            city: "울릉도",
+            initials: "ㅇㄹㄷ",
+            clues: ["다설지", "동계 강수 집중률 최고", "화산지형", "나리분지", "우데기", "호박엿", "오징어", "독도새우"],
+            x: 88.0,
+            y: 34.8,
+            cover: { width: 6.6, aspect: 2.0, offsetX: 0, offsetY: 0, rotate: -3 }
+          },
+          {
+            city: "문경",
+            initials: "ㅁㄱ",
+            clues: ["석탄박물관", "조령(새재)", "가은역", "에코랄라", "드라마세트장", "사과", "오미자"],
+            x: 56.6,
+            y: 39.4,
+            cover: { width: 4.2, aspect: 1.5, offsetX: 0, offsetY: 0, rotate: -4 }
+          },
+          {
+            city: "울진",
+            initials: "ㅇㅈ",
+            clues: ["원자력발전소(한울)", "불영사계곡", "죽변항", "망양해수욕장", "대게빵", "죽변 해안스카이 모노레일", "덕구온천"],
+            x: 80.3,
+            y: 34.5,
+            cover: { width: 5.5, aspect: 1.2, offsetX: .6, offsetY: .3, rotate: -4 }
+          },
+          {
+            city: "의성",
+            initials: "ㅇㅅ",
+            clues: ["고령화지수 1위", "마늘", "마늘햄", "사과", "씨름과 컬링"],
+            x: 64.2,
+            y: 46.3,
+            cover: { width: 4.6, aspect: 1.35, offsetX: .2, offsetY: .2, rotate: -4 }
+          }
+        ]
       }
     };
 
-    const activeRegionKey = "gangwon";
-    const completedRegionKeys = new Set();
-    const activeRegion = GAME_REGIONS[activeRegionKey];
-    const cities = activeRegion.cities;
+    function loadCompletedRegions() {
+      try {
+        const saved = JSON.parse(localStorage.getItem("koreaMapCompletedRegions") || "[]");
+        return new Set(saved.filter((regionKey) => GAME_REGIONS[regionKey]));
+      } catch {
+        return new Set();
+      }
+    }
+
+    let activeRegionKey = "gangwon";
+    const completedRegionKeys = loadCompletedRegions();
+    let activeRegion = GAME_REGIONS[activeRegionKey];
+    let cities = activeRegion.cities;
 
     const elements = {
       gameScreen: document.getElementById("gameScreen"),
       resultScreen: document.getElementById("resultScreen"),
+      regionTitle: document.getElementById("regionTitle"),
+      regionBadge: document.getElementById("regionBadge"),
+      regionTabs: document.getElementById("regionTabs"),
+      mapRegionName: document.getElementById("mapRegionName"),
+      pointColorName: document.getElementById("pointColorName"),
       questionNumber: document.getElementById("questionNumber"),
       scoreDisplay: document.getElementById("scoreDisplay"),
       streakDisplay: document.getElementById("streakDisplay"),
@@ -717,6 +865,7 @@
       zoomLevel: document.getElementById("zoomLevel"),
       resultText: document.getElementById("resultText"),
       resultEmoji: document.getElementById("resultEmoji"),
+      resultTitle: document.getElementById("resultTitle"),
       restartButton: document.getElementById("restartButton"),
       mapImage: document.getElementById("mapImage")
     };
@@ -773,6 +922,7 @@
       cover.style.setProperty("--cover-width", coverData.width);
       cover.style.setProperty("--cover-aspect", coverData.aspect);
       cover.style.setProperty("--cover-rotate", `${coverData.rotate}deg`);
+      cover.style.setProperty("--cover-color", activeRegion.coverColor);
       return cover;
     }
 
@@ -783,17 +933,62 @@
 
     function renderRegionColors() {
       const visibleRegionKeys = new Set([...completedRegionKeys, activeRegionKey]);
-      const layers = [...visibleRegionKeys].map((regionKey) => {
+      const layers = [...visibleRegionKeys].flatMap((regionKey) => {
         const region = GAME_REGIONS[regionKey];
-        if (!region?.mapClip) return null;
-        const image = document.createElement("img");
-        image.className = "map-color-layer";
-        image.src = "KakaoTalk_20260829_172706236.jpg";
-        image.alt = "";
-        image.style.clipPath = region.mapClip;
-        return image;
-      }).filter(Boolean);
+        const clips = region?.mapClips || (region?.mapClip ? [region.mapClip] : []);
+        return clips.map((clip) => {
+          const image = document.createElement("img");
+          image.className = "map-color-layer";
+          image.src = "KakaoTalk_20260829_172706236.jpg";
+          image.alt = "";
+          image.style.clipPath = clip;
+          return image;
+        });
+      });
       elements.regionColorLayers.replaceChildren(...layers);
+    }
+
+    function renderRegionTabs() {
+      const buttons = Object.entries(GAME_REGIONS).map(([regionKey, region]) => {
+        const button = document.createElement("button");
+        const isActive = regionKey === activeRegionKey;
+        button.type = "button";
+        button.className = `region-tab${isActive ? " active" : ""}${completedRegionKeys.has(regionKey) ? " completed" : ""}`;
+        button.textContent = `${region.emoji} ${region.name}`;
+        button.setAttribute("aria-pressed", String(isActive));
+        button.style.setProperty("--tab-color", region.pointColor);
+        button.style.setProperty("--tab-soft", region.softColor);
+        button.style.setProperty("--tab-dark", region.darkColor);
+        button.style.setProperty("--tab-shadow", region.tabShadow);
+        button.addEventListener("click", () => setActiveRegion(regionKey));
+        return button;
+      });
+      elements.regionTabs.replaceChildren(...buttons);
+    }
+
+    function setActiveRegion(regionKey) {
+      if (!GAME_REGIONS[regionKey]) return;
+      activeRegionKey = regionKey;
+      activeRegion = GAME_REGIONS[activeRegionKey];
+      cities = activeRegion.cities;
+
+      document.documentElement.style.setProperty("--region-color", activeRegion.pointColor);
+      document.documentElement.style.setProperty("--region-dark", activeRegion.darkColor);
+      elements.regionTitle.textContent = `${activeRegion.name} 테스트`;
+      elements.regionBadge.textContent = `${activeRegion.emoji} ${activeRegion.name}`;
+      elements.regionBadge.setAttribute("aria-label", `현재 권역 ${activeRegion.name}`);
+      elements.regionBadge.style.borderColor = activeRegion.pointColor;
+      elements.regionBadge.style.color = activeRegion.darkColor;
+      elements.regionBadge.style.boxShadow = `0 5px 0 ${activeRegion.tabShadow}`;
+      elements.mapRegionName.textContent = activeRegion.name;
+      elements.pointColorName.textContent = activeRegion.pointColorName;
+      elements.gameScreen.setAttribute("aria-label", `${activeRegion.name} 도시 찾기 게임`);
+
+      renderRegionTabs();
+      renderRegionColors();
+      renderPoints();
+      setMapZoom(MIN_ZOOM, true);
+      startGame();
     }
 
     function setMapZoom(nextZoom, resetPosition = false, anchor = null) {
@@ -805,7 +1000,18 @@
       const mapY = viewport.scrollTop + anchorY;
 
       mapZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nextZoom));
+      const zoomProgress = (mapZoom - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM);
+      const pointSize = 28 + (28 * zoomProgress);
+      const pointBorder = 3 + zoomProgress;
+      const pointFontSize = 16 + (9 * zoomProgress);
+      const pointShadowOffset = 2 + (2 * zoomProgress);
+      const pointLabelGap = 5 + (3 * zoomProgress);
       elements.mapStage.style.setProperty("--zoom", mapZoom);
+      elements.mapStage.style.setProperty("--point-size", `${pointSize.toFixed(1)}px`);
+      elements.mapStage.style.setProperty("--point-border", `${pointBorder.toFixed(1)}px`);
+      elements.mapStage.style.setProperty("--point-font-size", `${pointFontSize.toFixed(1)}px`);
+      elements.mapStage.style.setProperty("--point-shadow-offset", `${pointShadowOffset.toFixed(1)}px`);
+      elements.mapStage.style.setProperty("--point-label-gap", `${pointLabelGap.toFixed(1)}px`);
       elements.zoomLevel.textContent = `${Math.round(mapZoom * 100)}%`;
       viewport.style.cursor = mapZoom >= MAX_ZOOM ? "zoom-out" : "zoom-in";
       viewport.classList.toggle("space-pan-ready", spacePressed && mapZoom > MIN_ZOOM);
@@ -917,8 +1123,9 @@
       }));
       elements.hintBox.hidden = true;
       elements.hintBox.textContent = "";
+      elements.feedback.hidden = true;
       elements.feedback.className = "feedback";
-      elements.feedback.textContent = "주황색 도시 포인트를 하나 눌러 주세요.";
+      elements.feedback.textContent = "";
       elements.hintButton.disabled = false;
       elements.hintButton.textContent = "💡 힌트 보기";
       elements.nextButton.disabled = true;
@@ -934,6 +1141,7 @@
       const selectedPoint = document.querySelector(`[data-city="${selectedCity}"]`);
       const answerPoint = document.querySelector(`[data-city="${answer.city}"]`);
 
+      elements.feedback.hidden = false;
       document.querySelectorAll(".city-point").forEach((point) => { point.disabled = true; });
       answerPoint.classList.add("correct", "reveal");
       answerPoint.querySelector("span[aria-hidden='true']").textContent = "✓";
@@ -971,11 +1179,20 @@
     function showResult() {
       elements.gameScreen.hidden = true;
       elements.resultScreen.classList.add("show");
+      elements.resultTitle.textContent = `${activeRegion.name} 연습 완료!`;
+      completedRegionKeys.add(activeRegionKey);
+      try {
+        localStorage.setItem("koreaMapCompletedRegions", JSON.stringify([...completedRegionKeys]));
+      } catch {
+        // 파일 실행 환경에서 저장소 사용이 제한되어도 게임은 계속 진행됩니다.
+      }
+      renderRegionTabs();
+      renderRegionColors();
 
       const percent = Math.round((score / questionOrder.length) * 100);
       if (percent === 100) {
         elements.resultEmoji.textContent = "🏆";
-        elements.resultText.innerHTML = `<strong>${score}점 / ${questionOrder.length}점</strong><br>완벽해요! 강원도 도시 박사예요.<br>최고 연속 정답: ${bestStreak}문제`;
+        elements.resultText.innerHTML = `<strong>${score}점 / ${questionOrder.length}점</strong><br>완벽해요! ${activeRegion.name} 도시 박사예요.<br>최고 연속 정답: ${bestStreak}문제`;
       } else if (percent >= 70) {
         elements.resultEmoji.textContent = "🎉";
         elements.resultText.innerHTML = `<strong>${score}점 / ${questionOrder.length}점</strong><br>아주 잘했어요! 한 번 더 하면 완벽해요.<br>최고 연속 정답: ${bestStreak}문제`;
@@ -1029,14 +1246,12 @@
     elements.mapViewport.addEventListener("lostpointercapture", finishMapPan);
     elements.mapViewport.addEventListener("click", preventClickAfterPan, true);
     elements.mapImage.addEventListener("error", () => {
+      elements.feedback.hidden = false;
       elements.feedback.className = "feedback wrong";
       elements.feedback.textContent = "지도 이미지를 찾을 수 없습니다. HTML과 지도 JPG를 같은 폴더에 두어 주세요.";
     });
 
-    renderRegionColors();
-    renderPoints();
-    setMapZoom(MIN_ZOOM, true);
-    startGame();
+    setActiveRegion("gangwon");
   </script>
 </body>
 </html>
