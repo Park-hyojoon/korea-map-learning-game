@@ -20,6 +20,7 @@
       --blue: #2fa9df;
       --region-color: #ff9418;
       --region-dark: #bd5100;
+      --region-shadow: #a9410b;
       --shadow: 0 8px 0 #e2e6ea, 0 15px 32px rgba(35, 50, 65, 0.08);
     }
 
@@ -498,7 +499,7 @@
       font-size: var(--point-font-size);
       font-weight: 1000;
       line-height: 1;
-      box-shadow: 0 var(--point-shadow-offset) 0 #a9410b, 0 5px 13px rgba(89, 44, 13, .28);
+      box-shadow: 0 var(--point-shadow-offset) 0 var(--region-shadow), 0 5px 13px rgba(46, 55, 64, .28);
       transition: width .16s ease, border-width .16s ease, font-size .16s ease, transform .16s ease, background .2s ease, box-shadow .2s ease;
       z-index: 3;
     }
@@ -675,6 +676,7 @@
         pointColorName: "주황색",
         pointColor: "#ff9418",
         darkColor: "#bd5100",
+        pointShadow: "#a9410b",
         softColor: "#fff0da",
         tabShadow: "#e8b77d",
         coverColor: "#f7be94",
@@ -748,6 +750,7 @@
         pointColorName: "하늘색",
         pointColor: "#2fa9df",
         darkColor: "#147ca9",
+        pointShadow: "#176b91",
         softColor: "#e3f5ff",
         tabShadow: "#9bcde3",
         coverColor: "#a9def0",
@@ -821,6 +824,87 @@
             x: 64.2,
             y: 46.3,
             cover: { width: 4.6, aspect: 1.35, offsetX: .2, offsetY: .2, rotate: -4 }
+          }
+        ]
+      },
+      jeonnam: {
+        name: "전라남도",
+        emoji: "⬜",
+        color: "gray",
+        pointColorName: "회색",
+        pointColor: "#75818d",
+        darkColor: "#4b5661",
+        pointShadow: "#4b5661",
+        softColor: "#eef1f3",
+        tabShadow: "#c5ccd2",
+        coverColor: "#c8c9ca",
+        // 자료의 회색 권역인 전라남도와 광주를 함께 보여 줍니다.
+        mapClip: "polygon(1% 72%, 4% 69%, 9% 67%, 14% 65.5%, 19% 64.5%, 24% 65%, 29% 66%, 34% 67%, 38% 68.5%, 42% 69.5%, 45% 71%, 47% 74%, 46% 78%, 44% 81%, 39% 83%, 32% 84%, 25% 86%, 17% 87%, 10% 86%, 4% 83%, 1% 79%)",
+        mapFocus: { x: .26, y: .74, zoom: 2.0 },
+        cities: [
+          {
+            city: "순천",
+            initials: "ㅅㅊ",
+            clues: ["전라남도", "람사르협약", "순천만", "정원 박람회", "갈대축제", "낙안읍성", "와온해변", "짱뚱어탕"],
+            x: 37.5,
+            y: 73.5,
+            cover: { width: 5.4, aspect: 1.25, offsetX: 0, offsetY: 0, rotate: -3 }
+          },
+          {
+            city: "광주",
+            initials: "ㄱㅈ",
+            clues: ["광역시", "5.18 민주화 운동", "광(光)산업", "자동차(기아)", "무등산"],
+            x: 25.8,
+            y: 68.5,
+            cover: { width: 5.2, aspect: 1.25, offsetX: 0, offsetY: 0, rotate: -3 }
+          },
+          {
+            city: "보성",
+            initials: "ㅂㅅ",
+            clues: ["전라남도", "녹차(지리적표시제 1호 상품)", "다향대축제", "대한 다원", "벌교꼬막"],
+            x: 33.0,
+            y: 75.4,
+            cover: { width: 5.4, aspect: 1.2, offsetX: 0, offsetY: 0, rotate: -4 }
+          },
+          {
+            city: "목포",
+            initials: "ㅁㅍ",
+            clues: ["전라남도", "호남선의 종착역", "영산강하굿둑", "우리나라 최대 해운 여객 터미널", "세월호", "조선", "일제 쌀 수출항", "다도해국립공원", "영화1987(연희네슈퍼)", "해상케이블카"],
+            x: 15.0,
+            y: 75.0,
+            cover: { width: 5.6, aspect: 1.1, offsetX: 0, offsetY: 0, rotate: -3 }
+          },
+          {
+            city: "여수",
+            initials: "ㅇㅅ",
+            clues: ["전라남도", "석유화학단지(GS칼텍스, 금호)", "오동도(동백섬)", "해상케이블카", "돌산대교", "갓김치", "게장백반"],
+            x: 44.0,
+            y: 76.4,
+            cover: { width: 5.4, aspect: 1.2, offsetX: 0, offsetY: 0, rotate: -4 }
+          },
+          {
+            city: "영광",
+            initials: "ㅇㄱ",
+            clues: ["전라남도", "굴비(법성포)", "원자력발전소(한빛)"],
+            x: 16.3,
+            y: 65.8,
+            cover: { width: 5.8, aspect: 1.1, offsetX: 0, offsetY: 0, rotate: -3 }
+          },
+          {
+            city: "신안",
+            initials: "ㅅㅇ",
+            clues: ["전라남도", "1004의 섬(홍도, 흑산도)", "일조량 1위", "천일제염", "태양광 발전소"],
+            x: 5.8,
+            y: 75.3,
+            cover: { width: 5.6, aspect: 1.1, offsetX: -1.8, offsetY: 0, rotate: -3 }
+          },
+          {
+            city: "광양",
+            initials: "ㄱㅇ",
+            clues: ["전라남도", "제철(포항과 함께-포스코)", "이순신대교", "전남 1인당 소득수준 1위"],
+            x: 44.0,
+            y: 72.8,
+            cover: { width: 5.6, aspect: 1.2, offsetX: 0, offsetY: 0, rotate: -3 }
           }
         ]
       }
@@ -974,6 +1058,7 @@
 
       document.documentElement.style.setProperty("--region-color", activeRegion.pointColor);
       document.documentElement.style.setProperty("--region-dark", activeRegion.darkColor);
+      document.documentElement.style.setProperty("--region-shadow", activeRegion.pointShadow);
       elements.regionTitle.textContent = `${activeRegion.name} 테스트`;
       elements.regionBadge.textContent = `${activeRegion.emoji} ${activeRegion.name}`;
       elements.regionBadge.setAttribute("aria-label", `현재 권역 ${activeRegion.name}`);
