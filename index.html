@@ -113,6 +113,138 @@
       color: var(--green);
     }
 
+    /* 시험보기는 권역 학습과 다른 모드라 탭 줄에서도 구분되게 보여 줍니다. */
+    .exam-tab {
+      border-color: #b9a4e8;
+      background: #f6f1ff;
+      color: #5b3fa5;
+      box-shadow: 0 4px 0 #cbb9f0;
+    }
+
+    .exam-tab.active {
+      border-color: #7c4dff;
+      background: #7c4dff;
+      color: #fff;
+      box-shadow: 0 4px 0 #4a25b8;
+    }
+
+    .exam-setup {
+      display: none;
+      gap: 18px;
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .exam-setup.show { display: grid; }
+    .exam-setup h2 { margin: 0; font-size: 30px; }
+    .exam-setup p { margin: 0; color: var(--muted); font-size: 17px; font-weight: 800; line-height: 1.6; }
+
+    .exam-count-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .exam-count-row label { color: #55616e; font-size: 17px; font-weight: 900; }
+
+    .exam-count-input {
+      width: 116px;
+      min-height: 52px;
+      padding: 0 14px;
+      border: 3px solid #dfe5ea;
+      border-radius: 14px;
+      background: #fff;
+      color: #2f3a45;
+      font-family: inherit;
+      font-size: 22px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .exam-count-input:focus-visible { border-color: #7c4dff; outline: 4px solid rgba(124, 77, 255, .22); outline-offset: 2px; }
+
+    .exam-count-hint { color: var(--muted); font-size: 15px; font-weight: 800; }
+    .exam-count-hint.invalid { color: #b3261e; }
+
+    .exam-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+
+    .action-button.exam-start-button {
+      min-width: 200px;
+      border-color: #9273ff;
+      background: linear-gradient(135deg, #9273ff, #7c4dff);
+      box-shadow: 0 5px 0 #4a25b8;
+    }
+
+    .action-button.exam-start-button:active { box-shadow: 0 2px 0 #4a25b8; }
+    .action-button.exam-start-button:disabled { opacity: .5; }
+
+    .ghost-button {
+      min-height: 54px;
+      padding: 0 22px;
+      border: 3px solid #dfe5ea;
+      border-radius: 18px;
+      background: #fff;
+      color: #687482;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 900;
+      box-shadow: 0 4px 0 #dfe5ea;
+    }
+
+    .ghost-button:hover { transform: translateY(-2px); }
+    .ghost-button:active { transform: translateY(2px); box-shadow: 0 2px 0 #dfe5ea; }
+
+    /* 누적 기록과 시험 결과에 쓰는 권역별 표입니다. */
+    .stat-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .stat-table caption {
+      padding-bottom: 10px;
+      color: #55616e;
+      font-size: 17px;
+      font-weight: 900;
+      text-align: left;
+    }
+
+    .stat-table th, .stat-table td {
+      padding: 9px 10px;
+      border-bottom: 2px solid #eef2f5;
+      text-align: right;
+    }
+
+    .stat-table th:first-child, .stat-table td:first-child { text-align: left; }
+    .stat-table thead th { color: var(--muted); font-size: 14px; }
+    .stat-table tr.worst td { background: var(--red-soft); color: #9e3636; }
+
+    .exam-record {
+      padding: 16px;
+      border: 2px solid #eef2f5;
+      border-radius: 16px;
+      background: #fbfcfd;
+      text-align: left;
+    }
+
+    .weak-callout {
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+      padding: 18px;
+      border: 3px solid #f3c7c7;
+      border-radius: 18px;
+      background: var(--red-soft);
+      color: #9e3636;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
     .game-grid {
       display: grid;
       grid-template-columns: minmax(290px, .82fr) minmax(420px, 1.28fr);
@@ -642,6 +774,21 @@
 
     <nav class="region-tabs" id="regionTabs" aria-label="학습 권역 선택"></nav>
 
+    <section class="panel exam-setup" id="examSetup" aria-label="시험 설정">
+      <div class="exam-count-row">
+        <label for="examCountInput">문제 수</label>
+        <input class="exam-count-input" id="examCountInput" type="number" inputmode="numeric" min="8" max="40" step="1" value="20" aria-describedby="examCountHint">
+        <span class="exam-count-hint" id="examCountHint">8개에서 40개까지 고를 수 있어요</span>
+      </div>
+
+      <div class="exam-actions">
+        <button class="action-button next-button exam-start-button" id="examStartButton" type="button">시험 시작하기</button>
+        <button class="ghost-button" id="examCancelButton" type="button">권역 학습으로 돌아가기</button>
+      </div>
+
+      <div class="exam-record" id="examRecord" hidden></div>
+    </section>
+
     <section class="game-grid" id="gameScreen" aria-label="강원도 도시 찾기 게임">
       <aside class="panel question-panel">
         <div class="progress-row">
@@ -671,9 +818,9 @@
         </div>
       </aside>
 
-      <section class="panel map-panel" aria-label="한반도 지도">
+      <section class="panel map-panel" id="mapPanel" aria-label="한반도 지도">
         <div class="map-guide">
-          <span><strong id="mapRegionName">강원도</strong>의 <span id="pointColorName">주황색</span> 포인트를 눌러 보세요.</span>
+          <span id="mapGuideText"><strong>강원도</strong>의 주황색 포인트를 눌러 보세요.</span>
           <span>정답 +1점</span>
         </div>
         <div class="zoom-toolbar" aria-label="지도 확대 및 축소">
@@ -700,7 +847,12 @@
         <div class="result-emoji" id="resultEmoji">🎉</div>
         <h2 id="resultTitle">강원도 연습 완료!</h2>
         <p id="resultText"></p>
-        <button class="action-button next-button restart-button" id="restartButton" type="button">다시 도전하기</button>
+        <div class="weak-callout" id="weakCallout" hidden></div>
+        <div class="exam-record" id="examBreakdown" hidden></div>
+        <div class="exam-actions">
+          <button class="action-button next-button restart-button" id="restartButton" type="button">다시 도전하기</button>
+          <button class="ghost-button" id="examBackButton" type="button" hidden>시험 설정으로</button>
+        </div>
       </div>
     </section>
   </main>
@@ -722,7 +874,6 @@
         // 원본 지도에서 강원도(주황 권역)를 감싸는 다각형입니다.
         // 원본 이미지의 권역 색을 검출해 뽑았습니다. 방법은 HANDOFF.md에 적어 두었습니다.
         mapClip: "polygon(34.7% 5.9%, 39.3% 8.4%, 46.1% 15.1%, 44.4% 18.7%, 49.1% 21.7%, 50.1% 24.7%, 48.6% 29.8%, 57.9% 28.5%, 66.3% 30.7%, 69.6% 32.7%, 81.8% 31.5%, 83.3% 32.0%, 84.3% 31.4%, 84.0% 28.0%, 73.5% 16.3%, 67.3% 4.5%, 64.2% 1.5%, 60.2% 1.1%, 50.7% 5.9%, 47.0% 6.3%, 39.5% 5.0%)",
-        mapFocus: { x: .61, y: .22, zoom: 2.15 },
         cities: [
           {
             city: "춘천",
@@ -798,7 +949,6 @@
           "polygon(83.4% 32.6%, 79.7% 33.2%, 72.5% 32.6%, 69.9% 33.1%, 66.0% 34.9%, 61.7% 38.3%, 56.2% 39.1%, 51.3% 41.1%, 51.1% 45.7%, 54.0% 47.6%, 54.3% 49.2%, 53.4% 51.2%, 50.3% 52.4%, 51.1% 55.1%, 53.9% 55.7%, 56.4% 57.3%, 55.9% 59.9%, 58.1% 58.6%, 60.3% 60.5%, 64.8% 60.0%, 68.1% 61.8%, 69.5% 60.4%, 71.6% 61.2%, 72.8% 60.7%, 73.9% 62.3%, 75.3% 62.7%, 75.7% 61.0%, 78.5% 59.1%, 80.8% 60.3%, 83.8% 59.8%, 85.2% 60.4%, 88.3% 53.8%, 87.5% 52.4%, 85.0% 51.1%, 84.5% 49.2%, 86.5% 40.0%, 85.2% 34.9%)",
           "polygon(90.2% 30.8%, 89.5% 30.9%, 88.6% 31.5%, 88.3% 31.9%, 88.1% 32.3%, 88.1% 33.0%, 88.3% 33.4%, 88.3% 34.2%, 88.6% 35.1%, 89.1% 35.6%, 90.0% 36.0%, 91.3% 36.0%, 92.6% 35.6%, 93.5% 34.9%, 94.0% 34.0%, 94.1% 33.1%, 93.8% 32.1%, 92.9% 31.3%, 91.7% 30.8%)"
         ],
-        mapFocus: { x: .69, y: .45, zoom: 1.85 },
         cities: [
           {
             city: "경주",
@@ -879,7 +1029,6 @@
         coverColor: "#c8c9ca",
         // 자료의 회색 권역인 전라남도와 광주를 함께 보여 줍니다.
         mapClip: "polygon(46.3% 65.3%, 42.3% 66.4%, 39.9% 65.0%, 26.5% 63.0%, 23.5% 64.8%, 19.3% 63.7%, 14.7% 64.5%, 10.5% 68.0%, 7.2% 69.3%, 5.2% 73.0%, 2.4% 74.9%, 4.9% 80.5%, 3.7% 85.9%, 8.7% 88.6%, 24.9% 89.7%, 27.6% 88.7%, 28.6% 85.6%, 46.7% 82.6%, 47.3% 78.6%, 49.4% 78.0%, 47.5% 75.0%, 49.6% 73.5%, 47.3% 73.0%, 47.1% 71.4%, 49.7% 70.2%, 47.1% 69.3%, 45.5% 66.9%)",
-        mapFocus: { x: .26, y: .74, zoom: 2.0 },
         cities: [
           {
             city: "순천",
@@ -963,7 +1112,6 @@
           "polygon(43.3% 65.9%, 47.7% 71.8%, 47.3% 76.1%, 48.4% 78.3%, 55.9% 79.3%, 61.1% 78.2%, 63.1% 79.3%, 64.8% 79.4%, 68.1% 78.5%, 70.8% 76.3%, 71.6% 74.5%, 76.8% 72.3%, 79.2% 70.2%, 80.0% 68.3%, 85.0% 64.6%, 85.0% 60.8%, 79.4% 59.7%, 72.0% 61.2%, 63.8% 60.5%, 61.0% 61.0%, 56.9% 59.1%, 54.2% 56.8%, 51.8% 56.8%, 50.1% 56.0%, 45.6% 58.4%, 45.3% 64.9%)",
           "polygon(93.8% 83.2%, 92.7% 82.2%, 90.6% 82.0%, 83.2% 83.0%, 79.2% 84.0%, 76.0% 85.4%, 74.7% 86.3%, 74.1% 87.4%, 74.3% 88.9%, 75.7% 90.1%, 79.0% 90.7%, 81.7% 90.7%, 86.5% 89.8%, 89.1% 88.9%, 93.7% 86.4%, 94.2% 85.6%)"
         ],
-        mapFocus: { x: .66, y: .70, zoom: 2.0 },
         cities: [
           {
             city: "창녕",
@@ -1052,7 +1200,6 @@
         coverColor: "#f2aca4",
         // 자료의 빨간색 권역인 경기도와 서울을 함께 보여 줍니다.
         mapClip: "polygon(31.7% 6.2%, 25.6% 8.9%, 24.6% 13.1%, 23.1% 14.8%, 15.4% 14.6%, 13.1% 15.1%, 11.3% 16.4%, 11.0% 18.6%, 12.4% 20.9%, 18.3% 24.9%, 17.8% 27.5%, 18.3% 28.5%, 21.8% 29.9%, 24.3% 32.4%, 28.9% 34.1%, 34.7% 33.6%, 37.7% 34.4%, 39.9% 32.4%, 46.9% 29.7%, 47.4% 28.0%, 46.1% 25.9%, 47.9% 23.9%, 46.6% 22.8%, 47.1% 21.1%, 46.6% 20.7%, 44.9% 21.7%, 43.9% 21.6%, 43.5% 19.9%, 42.0% 19.2%, 41.2% 13.6%, 36.0% 10.2%, 35.7% 8.8%, 33.7% 7.8%, 34.0% 6.4%)",
-        mapFocus: { x: .29, y: .20, zoom: 2.1 },
         cities: [
           {
             city: "고양",
@@ -1109,7 +1256,6 @@
         coverColor: "#f2dfa4",
         // 자료의 노란색 권역인 충청남도와 대전·세종을 함께 보여 줍니다.
         mapClip: "polygon(10.3% 35.8%, 9.2% 37.2%, 9.2% 38.6%, 12.0% 40.7%, 13.5% 45.4%, 21.3% 51.4%, 22.3% 51.7%, 25.1% 51.4%, 27.9% 49.3%, 30.3% 48.9%, 34.6% 50.3%, 38.5% 50.1%, 40.9% 51.5%, 43.9% 51.4%, 41.8% 45.9%, 38.1% 43.8%, 36.5% 41.8%, 36.6% 35.1%, 31.0% 34.6%, 28.9% 35.0%, 25.8% 34.1%, 22.9% 31.9%, 18.3% 31.5%, 15.8% 32.1%, 14.1% 33.9%)",
-        mapFocus: { x: .26, y: .42, zoom: 2.0 },
         cities: [
           {
             city: "대전",
@@ -1190,7 +1336,6 @@
         coverColor: "#c9bdf2",
         // 자료의 보라색 권역인 전라북도입니다.
         mapClip: "polygon(15.8% 62.7%, 16.7% 63.8%, 19.2% 64.0%, 20.1% 64.7%, 22.6% 64.3%, 25.3% 62.8%, 29.6% 64.4%, 31.6% 64.5%, 32.8% 65.3%, 38.9% 64.7%, 40.2% 65.9%, 42.9% 65.6%, 44.8% 63.9%, 44.1% 58.5%, 49.9% 55.9%, 52.2% 56.5%, 53.7% 56.0%, 50.4% 55.5%, 48.9% 52.8%, 43.8% 52.0%, 40.5% 53.2%, 38.5% 51.6%, 37.1% 51.2%, 33.7% 51.8%, 28.8% 50.4%, 27.5% 51.9%, 22.6% 52.4%, 20.7% 53.4%, 19.6% 56.1%, 17.6% 58.3%)",
-        mapFocus: { x: .32, y: .58, zoom: 2.1 },
         cities: [
           {
             city: "전주",
@@ -1247,7 +1392,6 @@
         coverColor: "#b9e0a8",
         // 자료의 초록색 권역인 충청북도입니다. 대전·세종은 노란색 권역이라 안쪽으로 파여 있습니다.
         mapClip: "polygon(54.7% 29.3%, 51.9% 31.0%, 49.5% 31.2%, 47.7% 30.6%, 43.5% 31.6%, 42.6% 33.0%, 41.0% 33.7%, 39.7% 33.6%, 38.4% 34.5%, 37.3% 36.5%, 37.3% 40.8%, 38.0% 42.3%, 39.0% 43.5%, 42.7% 45.6%, 44.1% 49.4%, 45.2% 50.9%, 49.5% 52.0%, 50.9% 51.8%, 53.3% 49.7%, 52.4% 47.4%, 50.6% 45.9%, 50.4% 44.2%, 49.6% 43.6%, 50.9% 40.5%, 53.7% 39.0%, 54.9% 39.1%, 61.7% 37.0%, 62.7% 36.0%, 64.7% 35.6%, 67.6% 33.3%, 60.0% 31.4%, 58.2% 29.9%)",
-        mapFocus: { x: .48, y: .40, zoom: 2.1 },
         cities: [
           {
             city: "청주",
@@ -1270,6 +1414,17 @@
       }
     };
 
+    // 도시가 어느 권역 소속인지 알아야 시험 결과를 권역별로 모을 수 있습니다.
+    Object.entries(GAME_REGIONS).forEach(([regionKey, region]) => {
+      region.cities.forEach((cityData) => { cityData.regionKey = regionKey; });
+    });
+    const ALL_CITIES = Object.values(GAME_REGIONS).flatMap((region) => region.cities);
+
+    const EXAM_MIN = 8;
+    const EXAM_MAX = 40;
+    const EXAM_DEFAULT = 20;
+    const EXAM_RECORD_KEY = "koreaMapExamRecord";
+
     function loadCompletedRegions() {
       try {
         const saved = JSON.parse(localStorage.getItem("koreaMapCompletedRegions") || "[]");
@@ -1279,10 +1434,45 @@
       }
     }
 
+    // 시험 기록은 권역별 누적 출제 수와 오답 수로 남깁니다.
+    function loadExamRecord() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(EXAM_RECORD_KEY) || "{}");
+        const regions = {};
+        Object.entries(saved.regions || {}).forEach(([regionKey, stat]) => {
+          if (!GAME_REGIONS[regionKey]) return;
+          regions[regionKey] = { asked: Number(stat.asked) || 0, wrong: Number(stat.wrong) || 0 };
+        });
+        return { exams: Number(saved.exams) || 0, regions };
+      } catch {
+        return { exams: 0, regions: {} };
+      }
+    }
+
+    function saveExamRecord(record) {
+      try {
+        localStorage.setItem(EXAM_RECORD_KEY, JSON.stringify(record));
+      } catch {
+        // 저장소를 쓸 수 없어도 시험 자체는 계속 진행됩니다.
+      }
+    }
+
     let activeRegionKey = "gangwon";
     const completedRegionKeys = loadCompletedRegions();
     let activeRegion = GAME_REGIONS[activeRegionKey];
     let cities = activeRegion.cities;
+
+    let isExamMode = false;
+    let examLog = [];
+    let examRecorded = false;
+
+    // 받침이 있으면 "이에요", 없으면 "예요"를 붙입니다.
+    function withCopula(word) {
+      const last = word.charCodeAt(word.length - 1);
+      const isHangul = last >= 0xac00 && last <= 0xd7a3;
+      const hasBatchim = isHangul && ((last - 0xac00) % 28) !== 0;
+      return hasBatchim ? "이에요" : "예요";
+    }
 
     const elements = {
       gameScreen: document.getElementById("gameScreen"),
@@ -1290,8 +1480,8 @@
       regionTitle: document.getElementById("regionTitle"),
       regionBadge: document.getElementById("regionBadge"),
       regionTabs: document.getElementById("regionTabs"),
-      mapRegionName: document.getElementById("mapRegionName"),
-      pointColorName: document.getElementById("pointColorName"),
+      mapGuideText: document.getElementById("mapGuideText"),
+      mapPanel: document.getElementById("mapPanel"),
       questionNumber: document.getElementById("questionNumber"),
       scoreDisplay: document.getElementById("scoreDisplay"),
       streakDisplay: document.getElementById("streakDisplay"),
@@ -1313,7 +1503,16 @@
       resultEmoji: document.getElementById("resultEmoji"),
       resultTitle: document.getElementById("resultTitle"),
       restartButton: document.getElementById("restartButton"),
-      mapImage: document.getElementById("mapImage")
+      mapImage: document.getElementById("mapImage"),
+      examSetup: document.getElementById("examSetup"),
+      examCountInput: document.getElementById("examCountInput"),
+      examCountHint: document.getElementById("examCountHint"),
+      examStartButton: document.getElementById("examStartButton"),
+      examCancelButton: document.getElementById("examCancelButton"),
+      examRecord: document.getElementById("examRecord"),
+      examBreakdown: document.getElementById("examBreakdown"),
+      examBackButton: document.getElementById("examBackButton"),
+      weakCallout: document.getElementById("weakCallout")
     };
 
     let questionOrder = [];
@@ -1338,6 +1537,8 @@
 
     const MIN_ZOOM = 1;
     const MAX_ZOOM = 2.5;
+    const MAP_RATIO = 1904 / 1396;   // 지도 이미지 세로÷가로
+    const NARROW_SCREEN = "(max-width: 850px)";   // 이 아래에서는 지도가 문제 카드 밑으로 내려갑니다
     const WHEEL_ZOOM_STEP = .15;
     const BUTTON_ZOOM_STEP = .25;
 
@@ -1357,6 +1558,12 @@
       button.dataset.city = cityData.city;
       button.style.setProperty("--x", cityData.x);
       button.style.setProperty("--y", cityData.y);
+      if (isExamMode) {
+        // 시험에서는 전국 포인트가 함께 보이므로 각자 자기 권역 색을 씁니다.
+        const region = GAME_REGIONS[cityData.regionKey];
+        button.style.setProperty("--point-color", region.pointColor);
+        button.style.setProperty("--region-shadow", region.pointShadow);
+      }
       button.setAttribute("aria-label", `${cityData.city} 위치 선택`);
       button.innerHTML = `<span aria-hidden="true">?</span><span class="city-name">${cityData.city}</span>`;
       button.addEventListener("click", () => checkAnswer(cityData.city));
@@ -1375,7 +1582,8 @@
       cover.style.setProperty("--cover-width", coverData.width);
       cover.style.setProperty("--cover-aspect", coverData.aspect);
       cover.style.setProperty("--cover-rotate", `${coverData.rotate}deg`);
-      cover.style.setProperty("--cover-color", activeRegion.coverColor);
+      const coverRegion = isExamMode ? GAME_REGIONS[cityData.regionKey] : activeRegion;
+      cover.style.setProperty("--cover-color", coverRegion.coverColor);
       return cover;
     }
 
@@ -1385,7 +1593,10 @@
     }
 
     function renderRegionColors() {
-      const visibleRegionKeys = new Set([...completedRegionKeys, activeRegionKey]);
+      // 시험에서는 전국을 한눈에 봐야 하므로 모든 권역을 색으로 보여 줍니다.
+      const visibleRegionKeys = isExamMode
+        ? new Set(Object.keys(GAME_REGIONS))
+        : new Set([...completedRegionKeys, activeRegionKey]);
       const layers = [...visibleRegionKeys].flatMap((regionKey) => {
         const region = GAME_REGIONS[regionKey];
         const clips = region?.mapClips || (region?.mapClip ? [region.mapClip] : []);
@@ -1401,10 +1612,52 @@
       elements.regionColorLayers.replaceChildren(...layers);
     }
 
+    function isNarrowScreen() {
+      return window.matchMedia(NARROW_SCREEN).matches;
+    }
+
+    // mapClip 다각형의 좌표에서 권역이 차지하는 사각 범위를 구합니다.
+    function getRegionBounds(region) {
+      const clips = region.mapClips || (region.mapClip ? [region.mapClip] : []);
+      const points = clips.flatMap((clip) =>
+        [...clip.matchAll(/([\d.]+)%\s+([\d.]+)%/g)].map((match) => [Number(match[1]), Number(match[2])]));
+      if (!points.length) return null;
+      const xs = points.map((point) => point[0]);
+      const ys = points.map((point) => point[1]);
+      return { minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) };
+    }
+
+    // 권역이 화면에 가득 차도록 확대하고 가운데로 옮깁니다.
+    function focusRegionOnMap(region) {
+      const bounds = getRegionBounds(region);
+      const viewport = elements.mapViewport;
+      if (!bounds || !viewport.clientWidth || !viewport.clientHeight) return;
+
+      const viewWidth = viewport.clientWidth;
+      const viewHeight = viewport.clientHeight;
+      const regionWidth = (bounds.maxX - bounds.minX) / 100;
+      const regionHeight = (bounds.maxY - bounds.minY) / 100;
+      const fitByWidth = regionWidth > 0 ? .9 / regionWidth : MAX_ZOOM;
+      const fitByHeight = regionHeight > 0 ? (.9 * viewHeight) / (viewWidth * MAP_RATIO * regionHeight) : MAX_ZOOM;
+      const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.min(fitByWidth, fitByHeight)));
+
+      setMapZoom(zoom, true);
+
+      const centerX = (bounds.minX + bounds.maxX) / 200;
+      const centerY = (bounds.minY + bounds.maxY) / 200;
+      // setMapZoom이 예약한 원점 복귀 뒤에 실행해야 가운데 맞춤이 유지됩니다.
+      requestAnimationFrame(() => {
+        const stageWidth = viewWidth * zoom;
+        const stageHeight = stageWidth * MAP_RATIO;
+        viewport.scrollLeft = (stageWidth * centerX) - (viewWidth / 2);
+        viewport.scrollTop = (stageHeight * centerY) - (viewHeight / 2);
+      });
+    }
+
     function renderRegionTabs() {
       const buttons = Object.entries(GAME_REGIONS).map(([regionKey, region]) => {
         const button = document.createElement("button");
-        const isActive = regionKey === activeRegionKey;
+        const isActive = !isExamMode && regionKey === activeRegionKey;
         button.type = "button";
         button.className = `region-tab${isActive ? " active" : ""}${completedRegionKeys.has(regionKey) ? " completed" : ""}`;
         button.textContent = `${region.emoji} ${region.name}`;
@@ -1416,11 +1669,23 @@
         button.addEventListener("click", () => setActiveRegion(regionKey));
         return button;
       });
+
+      const examTab = document.createElement("button");
+      examTab.type = "button";
+      examTab.id = "examTab";
+      examTab.className = `region-tab exam-tab${isExamMode ? " active" : ""}`;
+      examTab.textContent = "📝 시험보기";
+      examTab.setAttribute("aria-pressed", String(isExamMode));
+      examTab.addEventListener("click", openExamSetup);
+      buttons.push(examTab);
+
       elements.regionTabs.replaceChildren(...buttons);
     }
 
     function setActiveRegion(regionKey) {
       if (!GAME_REGIONS[regionKey]) return;
+      isExamMode = false;
+      elements.examSetup.classList.remove("show");
       activeRegionKey = regionKey;
       activeRegion = GAME_REGIONS[activeRegionKey];
       cities = activeRegion.cities;
@@ -1434,15 +1699,23 @@
       elements.regionBadge.style.borderColor = activeRegion.pointColor;
       elements.regionBadge.style.color = activeRegion.darkColor;
       elements.regionBadge.style.boxShadow = `0 5px 0 ${activeRegion.tabShadow}`;
-      elements.mapRegionName.textContent = activeRegion.name;
-      elements.pointColorName.textContent = activeRegion.pointColorName;
+      elements.mapGuideText.innerHTML = `<strong>${activeRegion.name}</strong>의 ${activeRegion.pointColorName} 포인트를 눌러 보세요.`;
       elements.gameScreen.setAttribute("aria-label", `${activeRegion.name} 도시 찾기 게임`);
 
       renderRegionTabs();
       renderRegionColors();
       renderPoints();
-      setMapZoom(MIN_ZOOM, true);
-      startGame();
+
+      // 좁은 화면에서는 지도가 문제 카드 아래에 있어 그냥 두면 보이지 않습니다.
+      // 권역을 고르면 지도로 데려가고, 그 권역을 확대해 가운데에 둡니다.
+      const focusMap = isNarrowScreen();
+      startGame({ keepScroll: focusMap });
+      if (focusMap) {
+        focusRegionOnMap(activeRegion);
+        elements.mapPanel.scrollIntoView({ block: "start", behavior: "smooth" });
+      } else {
+        setMapZoom(MIN_ZOOM, true);
+      }
     }
 
     function setMapZoom(nextZoom, resetPosition = false, anchor = null) {
@@ -1645,6 +1918,7 @@
       const isCorrect = selectedCity === answer.city;
       const selectedPoint = document.querySelector(`[data-city="${selectedCity}"]`);
       const answerPoint = document.querySelector(`[data-city="${answer.city}"]`);
+      if (isExamMode) examLog.push({ regionKey: answer.regionKey, correct: isCorrect });
 
       elements.feedback.hidden = false;
       document.querySelectorAll(".city-point").forEach((point) => { point.disabled = true; });
@@ -1684,20 +1958,30 @@
     function showResult() {
       elements.gameScreen.hidden = true;
       elements.resultScreen.classList.add("show");
-      elements.resultTitle.textContent = `${activeRegion.name} 연습 완료!`;
-      completedRegionKeys.add(activeRegionKey);
-      try {
-        localStorage.setItem("koreaMapCompletedRegions", JSON.stringify([...completedRegionKeys]));
-      } catch {
-        // 파일 실행 환경에서 저장소 사용이 제한되어도 게임은 계속 진행됩니다.
+
+      const label = isExamMode ? "전국 시험" : activeRegion.name;
+      elements.resultTitle.textContent = isExamMode ? "시험 완료!" : `${activeRegion.name} 연습 완료!`;
+
+      if (isExamMode) {
+        finishExam();
+      } else {
+        elements.weakCallout.hidden = true;
+        elements.examBreakdown.hidden = true;
+        elements.examBackButton.hidden = true;
+        completedRegionKeys.add(activeRegionKey);
+        try {
+          localStorage.setItem("koreaMapCompletedRegions", JSON.stringify([...completedRegionKeys]));
+        } catch {
+          // 파일 실행 환경에서 저장소 사용이 제한되어도 게임은 계속 진행됩니다.
+        }
+        renderRegionTabs();
+        renderRegionColors();
       }
-      renderRegionTabs();
-      renderRegionColors();
 
       const percent = Math.round((score / questionOrder.length) * 100);
       if (percent === 100) {
         elements.resultEmoji.textContent = "🏆";
-        elements.resultText.innerHTML = `<strong>${score}점 / ${questionOrder.length}점</strong><br>완벽해요! ${activeRegion.name} 도시 박사예요.<br>최고 연속 정답: ${bestStreak}문제`;
+        elements.resultText.innerHTML = `<strong>${score}점 / ${questionOrder.length}점</strong><br>완벽해요! ${label} 도시 박사예요.<br>최고 연속 정답: ${bestStreak}문제`;
       } else if (percent >= 70) {
         elements.resultEmoji.textContent = "🎉";
         elements.resultText.innerHTML = `<strong>${score}점 / ${questionOrder.length}점</strong><br>아주 잘했어요! 한 번 더 하면 완벽해요.<br>최고 연속 정답: ${bestStreak}문제`;
@@ -1719,22 +2003,180 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function startGame() {
-      questionOrder = shuffle(cities);
+    function startGame(options = {}) {
+      questionOrder = isExamMode
+        ? shuffle(ALL_CITIES).slice(0, readExamCount())
+        : shuffle(cities);
       currentIndex = 0;
       score = 0;
       streak = 0;
       bestStreak = 0;
       answered = false;
+      examLog = [];
+      examRecorded = false;
+      elements.examSetup.classList.remove("show");
       elements.gameScreen.hidden = false;
       elements.resultScreen.classList.remove("show");
       renderQuestion();
+      if (!options.keepScroll) window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function readExamCount() {
+      const raw = Number.parseInt(elements.examCountInput.value, 10);
+      if (Number.isNaN(raw)) return EXAM_DEFAULT;
+      return Math.min(EXAM_MAX, Math.max(EXAM_MIN, raw));
+    }
+
+    function validateExamCount() {
+      const raw = Number.parseInt(elements.examCountInput.value, 10);
+      const isValid = !Number.isNaN(raw) && raw >= EXAM_MIN && raw <= EXAM_MAX;
+      elements.examCountHint.classList.toggle("invalid", !isValid);
+      elements.examCountHint.textContent = isValid
+        ? `${EXAM_MIN}개에서 ${EXAM_MAX}개까지 고를 수 있어요`
+        : `${EXAM_MIN}개에서 ${EXAM_MAX}개 사이로 적어 주세요`;
+      elements.examStartButton.disabled = !isValid;
+      return isValid;
+    }
+
+    // 권역별 오답을 많이 틀린 순으로 정리합니다.
+    function summarizeByRegion(entries) {
+      const rows = new Map();
+      entries.forEach(({ regionKey, correct }) => {
+        const row = rows.get(regionKey) || { regionKey, asked: 0, wrong: 0 };
+        row.asked += 1;
+        if (!correct) row.wrong += 1;
+        rows.set(regionKey, row);
+      });
+      return [...rows.values()].sort((a, b) => (b.wrong - a.wrong) || (a.asked - b.asked));
+    }
+
+    function buildStatTable(caption, rows) {
+      const table = document.createElement("table");
+      table.className = "stat-table";
+      const worstWrong = rows.length ? rows[0].wrong : 0;
+      table.innerHTML = `
+        <caption>${caption}</caption>
+        <thead><tr><th>권역</th><th>출제</th><th>틀림</th></tr></thead>
+        <tbody>${rows.map((row) => `
+          <tr class="${row.wrong > 0 && row.wrong === worstWrong ? "worst" : ""}">
+            <td>${GAME_REGIONS[row.regionKey].emoji} ${GAME_REGIONS[row.regionKey].name}</td>
+            <td>${row.asked}</td>
+            <td>${row.wrong}</td>
+          </tr>`).join("")}</tbody>`;
+      return table;
+    }
+
+    function renderExamRecord() {
+      const record = loadExamRecord();
+      const rows = Object.entries(record.regions)
+        .map(([regionKey, stat]) => ({ regionKey, ...stat }))
+        .filter((row) => row.asked > 0)
+        .sort((a, b) => (b.wrong - a.wrong) || (a.asked - b.asked));
+
+      if (!rows.length) {
+        elements.examRecord.hidden = true;
+        elements.examRecord.replaceChildren();
+        return;
+      }
+
+      const table = buildStatTable(`지금까지 본 시험 ${record.exams}회 · 권역별 누적 기록`, rows);
+      elements.examRecord.hidden = false;
+      elements.examRecord.replaceChildren(table);
+    }
+
+    function openExamSetup() {
+      isExamMode = true;
+      examLog = [];
+      elements.gameScreen.hidden = true;
+      elements.resultScreen.classList.remove("show");
+      elements.examSetup.classList.add("show");
+      elements.regionTitle.textContent = "전국 시험";
+      elements.regionBadge.textContent = "📝 시험보기";
+      elements.regionBadge.setAttribute("aria-label", "현재 모드 시험보기");
+      elements.regionBadge.style.borderColor = "#7c4dff";
+      elements.regionBadge.style.color = "#5b3fa5";
+      elements.regionBadge.style.boxShadow = "0 5px 0 #cbb9f0";
+      renderRegionTabs();
+      validateExamCount();
+      renderExamRecord();
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function startExam() {
+      if (!validateExamCount()) return;
+      isExamMode = true;
+      cities = ALL_CITIES;
+      elements.mapGuideText.innerHTML = "<strong>전국</strong>에서 도시를 찾아보세요. 권역마다 색이 달라요.";
+      elements.gameScreen.setAttribute("aria-label", "전국 도시 찾기 시험");
+      document.documentElement.style.setProperty("--region-color", "#7c4dff");
+      document.documentElement.style.setProperty("--region-dark", "#4a25b8");
+      document.documentElement.style.setProperty("--region-shadow", "#4a25b8");
+      renderRegionColors();
+      renderPoints();
+      setMapZoom(MIN_ZOOM, true);
+      startGame();
+    }
+
+    function finishExam() {
+      // 결과 화면이 다시 그려져도 기록은 시험당 한 번만 쌓습니다.
+      if (examRecorded) return;
+      examRecorded = true;
+
+      const rows = summarizeByRegion(examLog);
+      // 만점일 때 초록으로 바꾼 색을 다음 시험에서 되돌립니다.
+      elements.weakCallout.style.borderColor = "";
+      elements.weakCallout.style.background = "";
+      elements.weakCallout.style.color = "";
+
+      const record = loadExamRecord();
+      record.exams += 1;
+      rows.forEach((row) => {
+        const stat = record.regions[row.regionKey] || { asked: 0, wrong: 0 };
+        stat.asked += row.asked;
+        stat.wrong += row.wrong;
+        record.regions[row.regionKey] = stat;
+      });
+      saveExamRecord(record);
+
+      const worst = rows.find((row) => row.wrong > 0);
+      if (worst) {
+        const region = GAME_REGIONS[worst.regionKey];
+        elements.weakCallout.hidden = false;
+        elements.weakCallout.replaceChildren();
+        const line = document.createElement("div");
+        line.innerHTML = `가장 많이 틀린 권역은 <strong>${region.emoji} ${region.name}</strong>${withCopula(region.name)}.<br>${worst.asked}문제 중 ${worst.wrong}문제를 놓쳤어요.`;
+        const reviewButton = document.createElement("button");
+        reviewButton.type = "button";
+        reviewButton.className = "action-button next-button";
+        reviewButton.textContent = `${region.name} 복습하러 가기`;
+        reviewButton.addEventListener("click", () => setActiveRegion(worst.regionKey));
+        elements.weakCallout.append(line, reviewButton);
+      } else {
+        elements.weakCallout.hidden = false;
+        elements.weakCallout.replaceChildren();
+        elements.weakCallout.style.borderColor = "#bfe6cf";
+        elements.weakCallout.style.background = "var(--green-soft)";
+        elements.weakCallout.style.color = "#176440";
+        const line = document.createElement("div");
+        line.textContent = "틀린 문제가 하나도 없어요. 모든 권역을 잘 익혔네요!";
+        elements.weakCallout.append(line);
+      }
+
+      elements.examBreakdown.hidden = false;
+      elements.examBreakdown.replaceChildren(buildStatTable("이번 시험 권역별 결과", rows));
+      elements.examBackButton.hidden = false;
     }
 
     elements.hintButton.addEventListener("click", showHint);
     elements.nextButton.addEventListener("click", nextQuestion);
-    elements.restartButton.addEventListener("click", startGame);
+    elements.restartButton.addEventListener("click", () => startGame());
+    elements.examStartButton.addEventListener("click", startExam);
+    elements.examCancelButton.addEventListener("click", () => setActiveRegion(activeRegionKey));
+    elements.examBackButton.addEventListener("click", openExamSetup);
+    elements.examCountInput.addEventListener("input", validateExamCount);
+    elements.examCountInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && validateExamCount()) startExam();
+    });
     elements.zoomResetButton.addEventListener("click", () => setMapZoom(MIN_ZOOM, true));
     elements.zoomInButton.addEventListener("click", () => stepMapZoom(1));
     elements.zoomOutButton.addEventListener("click", () => stepMapZoom(-1));
