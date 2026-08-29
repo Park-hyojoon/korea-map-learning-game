@@ -202,13 +202,6 @@
       font-weight: 900;
     }
 
-    .question-title {
-      margin: 0;
-      font-size: clamp(23px, 3vw, 31px);
-      line-height: 1.35;
-      letter-spacing: -.025em;
-    }
-
     .clue-list {
       display: flex;
       flex-wrap: wrap;
@@ -433,6 +426,20 @@
       -webkit-user-drag: none;
     }
 
+    .city-cover {
+      position: absolute;
+      left: calc(var(--cover-left) * 1%);
+      top: calc(var(--cover-top) * 1%);
+      width: calc(var(--cover-width) * 1%);
+      aspect-ratio: var(--cover-aspect);
+      transform: translate(-50%, -50%) rotate(var(--cover-rotate));
+      border-radius: 30%;
+      background: #f7be94;
+      box-shadow: 0 0 4px 3px #f7be94;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     .city-point {
       --point-color: var(--orange);
       position: absolute;
@@ -453,7 +460,7 @@
       line-height: 1;
       box-shadow: 0 4px 0 #a9410b, 0 7px 16px rgba(89, 44, 13, .28);
       transition: transform .16s ease, background .2s ease, box-shadow .2s ease;
-      z-index: 2;
+      z-index: 3;
     }
 
     .city-point:hover:not(:disabled) { transform: translate(-50%, -56%) scale(1.08); }
@@ -574,10 +581,9 @@
           <div class="coach-speech">특징을 찬찬히 읽고 지도에서 도시를 찾아보자!</div>
         </div>
         <p class="question-label">이 특징에 맞는 도시는?</p>
-        <h2 class="question-title">지도에서 알맞은 위치를 눌러 보세요!</h2>
-        <ul class="clue-list" id="clueList"></ul>
+          <ul class="clue-list" id="clueList"></ul>
 
-        <div class="hint-box" id="hintBox" aria-live="polite">초성 힌트가 여기에 나와요</div>
+          <div class="hint-box" id="hintBox" aria-live="polite" hidden></div>
         <div class="feedback" id="feedback" aria-live="assertive">주황색 도시 포인트를 하나 눌러 주세요.</div>
 
         <div class="controls">
@@ -629,51 +635,58 @@
           {
             city: "춘천",
             initials: "ㅊㅊ",
-            clues: ["강원도 도청 소재지", "닭갈비와 막국수", "호반의 도시", "서울과 지하철 연결", "남이섬"],
+            clues: ["강원도 도청 소재지", "침식분지", "닭갈비와 막국수", "호반의 도시", "서울과 지하철 연결", "남이섬"],
             x: 47.8,
-            y: 15.5
+            y: 15.5,
+            cover: { width: 3.8, aspect: 1.5, offsetX: 0, offsetY: 0, rotate: 0 }
           },
           {
             city: "강릉",
             initials: "ㄱㄹ",
-            clues: ["해안 도시", "경포호와 오죽헌", "초당순두부와 닭강정", "커피거리와 단오제", "드라마 도깨비 촬영지"],
+            clues: ["해안단구(정동진)", "모래시계", "석호(경포호)", "오죽헌(신사임당과 이율곡)", "초당순두부", "닭강정", "커피거리(안목해변)", "단오제", "도깨비"],
             x: 71.7,
-            y: 21.0
+            y: 21.0,
+            cover: { width: 4.2, aspect: .65, offsetX: .4, offsetY: -1.5, rotate: -5 }
           },
           {
             city: "평창",
             initials: "ㅍㅊ",
-            clues: ["동계올림픽", "고위평탄면", "삼양목장과 대관령", "스키장", "다우지·다설지와 풍력발전"],
+            clues: ["동계올림픽", "고위평탄면(고랭지농업)", "삼양목장", "대관령", "스키장", "다우지와 다설지", "풍력발전"],
             x: 62.4,
-            y: 24.5
+            y: 24.5,
+            cover: { width: 3.5, aspect: .8, offsetX: 0, offsetY: -1.5, rotate: -4 }
           },
           {
             city: "원주",
             initials: "ㅇㅈ",
-            clues: ["강원도 인구 1위", "의료기기클러스터", "건강보험관리공단", "혁신 도시", "치악산과 뮤지엄 산"],
+            clues: ["강원도 인구 1위", "의료기기클러스터", "건강보험관리공단(from 서울)", "혁신 도시", "치악산", "뮤지엄 산"],
             x: 52.2,
-            y: 27.1
+            y: 27.1,
+            cover: { width: 4.0, aspect: .9, offsetX: -.5, offsetY: -.5, rotate: -8 }
           },
           {
             city: "삼척",
             initials: "ㅅㅊ",
-            clues: ["무연탄", "카르스트지형", "석회동굴", "한국의 나폴리 장호항"],
+            clues: ["무연탄", "카르스트지형(시멘트공업)", "석회동굴(환선굴)", "한국의 나폴리(장호항)"],
             x: 76.2,
-            y: 28.2
+            y: 28.2,
+            cover: { width: 4.7, aspect: 1.15, offsetX: 2.15, offsetY: -.5, rotate: -12 }
           },
           {
             city: "영월",
             initials: "ㅇㅇ",
-            clues: ["동강 래프팅", "카르스트지형", "시멘트 공업"],
+            clues: ["감입곡류하천(선암마을-한반도 지형)", "동강 래프팅", "카르스트지형(시멘트 공업)"],
             x: 62.3,
-            y: 29.5
+            y: 29.5,
+            cover: { width: 4.0, aspect: 1.2, offsetX: .2, offsetY: 0, rotate: -5 }
           },
           {
             city: "태백",
             initials: "ㅌㅂ",
-            clues: ["무연탄과 석탄박물관", "카르스트지형", "낙동강과 한강의 발원지", "꽃 축제"],
+            clues: ["무연탄", "석탄박물관", "카르스트지형(석회동굴-용연동굴)", "낙동강과 한강의 발원지(황지연못, 검룡소)", "꽃 축제"],
             x: 73.5,
-            y: 31.4
+            y: 31.4,
+            cover: { width: 4.8, aspect: 1, offsetX: 1.8, offsetY: -.9, rotate: -12 }
           }
         ]
       }
@@ -750,8 +763,22 @@
       return button;
     }
 
+    function makeCover(cityData) {
+      const coverData = cityData.cover || { width: 5, aspect: 1, offsetX: 0, offsetY: 0, rotate: 0 };
+      const cover = document.createElement("div");
+      cover.className = "city-cover";
+      cover.setAttribute("aria-hidden", "true");
+      cover.style.setProperty("--cover-left", cityData.x + coverData.offsetX);
+      cover.style.setProperty("--cover-top", cityData.y + coverData.offsetY);
+      cover.style.setProperty("--cover-width", coverData.width);
+      cover.style.setProperty("--cover-aspect", coverData.aspect);
+      cover.style.setProperty("--cover-rotate", `${coverData.rotate}deg`);
+      return cover;
+    }
+
     function renderPoints() {
-      elements.cityPoints.replaceChildren(...cities.map(makePoint));
+      const mapItems = cities.flatMap((cityData) => [makeCover(cityData), makePoint(cityData)]);
+      elements.cityPoints.replaceChildren(...mapItems);
     }
 
     function renderRegionColors() {
@@ -888,7 +915,8 @@
         item.textContent = clue;
         return item;
       }));
-      elements.hintBox.textContent = "초성 힌트가 여기에 나와요";
+      elements.hintBox.hidden = true;
+      elements.hintBox.textContent = "";
       elements.feedback.className = "feedback";
       elements.feedback.textContent = "주황색 도시 포인트를 하나 눌러 주세요.";
       elements.hintButton.disabled = false;
@@ -934,6 +962,7 @@
     function showHint() {
       if (answered) return;
       const answer = questionOrder[currentIndex];
+      elements.hintBox.hidden = false;
       elements.hintBox.textContent = `초성 힌트: ${answer.initials}`;
       elements.hintButton.textContent = "힌트 확인 완료";
       elements.hintButton.disabled = true;
